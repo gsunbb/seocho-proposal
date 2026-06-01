@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>서원초 4학년 4반의 폭염 해결 제안 | 서초구청</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Gaegu:wght@700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Noto Sans KR',sans-serif;background:#FFFBF0;overflow-x:hidden}
+    .hero{background:linear-gradient(160deg,#FFF3C4 0%,#C8F0FF 55%,#C8F8E8 100%);padding:64px 24px 52px;text-align:center;position:relative;overflow:hidden}
+    .hero-emoji{font-size:2.4rem;display:block;margin-bottom:18px;animation:bobble 2.5s ease-in-out infinite}
+    @keyframes bobble{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .hero h1{font-family:'Gaegu',cursive;font-size:clamp(1.8rem,5.5vw,3.2rem);color:#2D2D2D;line-height:1.3;margin-bottom:14px}
+    .hero h1 span{color:#FF6B6B}
+    .hero-sub{font-size:1rem;color:#666;max-width:560px;margin:0 auto 26px;line-height:1.9}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:white;border-radius:100px;padding:10px 22px;font-size:.85rem;font-weight:700;color:#FF6B6B;box-shadow:0 3px 16px rgba(0,0,0,.1)}
+    #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+
+    /* STATS */
+    .stats{background:#2D2D2D;padding:52px 20px;text-align:center}
+    .stats h2{font-family:'Gaegu',cursive;font-size:1.5rem;color:#FFB830;margin-bottom:30px}
+    .stats-row{display:flex;flex-wrap:wrap;justify-content:center;gap:28px}
+    .stat-box{text-align:center;min-width:140px;cursor:pointer;transition:transform .2s;padding:8px;border-radius:12px}
+    .stat-box:hover{transform:scale(1.06);background:rgba(255,255,255,.07)}
+    .stat-click-hint{font-size:.7rem;color:#888;margin-top:5px;letter-spacing:.5px}
+    /* 차트 모달 */
+    .chart-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:3000;align-items:center;justify-content:center;padding:16px}
+    .chart-modal-overlay.open{display:flex}
+    .chart-modal-box{background:white;border-radius:24px;max-width:560px;width:100%;padding:28px 28px 24px;position:relative;max-height:92vh;overflow-y:auto}
+    .chart-modal-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;line-height:1}
+    .chart-modal-close:hover{color:#333}
+    .chart-title{font-family:'Gaegu',cursive;font-size:1.25rem;color:#2D2D2D;margin-bottom:4px}
+    .chart-sub{font-size:.82rem;color:#aaa;margin-bottom:20px}
+    .bar-chart{display:flex;flex-direction:column;gap:10px}
+    .bar-row{display:flex;align-items:center;gap:10px}
+    .bar-label{font-size:.82rem;color:#444;min-width:100px;text-align:right;flex-shrink:0}
+    .bar-label.wide{min-width:130px}
+    .bar-track{flex:1;background:#f0f0f0;border-radius:100px;height:22px;overflow:hidden;position:relative}
+    .bar-fill{height:100%;border-radius:100px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.75rem;font-weight:700;color:white;transition:width .8s cubic-bezier(.4,0,.2,1);min-width:30px}
+    .bar-fill.highlight{outline:3px solid #FFB830;outline-offset:1px}
+    .chart-note{font-size:.78rem;color:#aaa;margin-top:16px;padding-top:14px;border-top:1px solid #f0f0f0;line-height:1.7}
+    /* 출처 버튼 */
+    .source-btn{display:inline-flex;align-items:center;gap:5px;background:none;border:1.5px solid #ddd;border-radius:100px;padding:5px 14px;font-size:.78rem;color:#888;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;margin-top:8px}
+    .source-btn:hover{border-color:#888;color:#444}
+    .source-detail{display:none;margin-top:10px;padding:12px 14px;background:#f8f8f8;border-radius:10px;font-size:.82rem;color:#555;line-height:1.8}
+    .source-detail.open{display:block}
+    
+    .stat-num{font-family:'Gaegu',cursive;font-size:clamp(1.7rem,4vw,2.8rem);color:#FFB830;line-height:1}
+    .stat-label{font-size:.78rem;color:#bbb;margin-top:6px;line-height:1.5}
+
+    /* PROPOSALS */
+    .proposals{max-width:1100px;margin:0 auto;padding:64px 20px 40px}
+    .section-label{font-size:.75rem;font-weight:700;letter-spacing:3px;color:#4ECDC4;margin-bottom:8px;text-align:center}
+    .proposals-title{font-family:'Gaegu',cursive;font-size:clamp(1.6rem,4vw,2.4rem);text-align:center;margin-bottom:10px;color:#2D2D2D}
+    .proposals-hint{text-align:center;color:#aaa;font-size:.85rem;margin-bottom:36px}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+
+    /* FLIP CARDS */
+    .flip-card{height:360px;perspective:1000px;cursor:pointer}
+    .flip-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+    .flip-card.flipped .flip-inner{transform:rotateY(180deg)}
+    .flip-front,.flip-back{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;padding:28px}
+    .flip-front{background:white;box-shadow:0 4px 20px rgba(0,0,0,.08);border-top:5px solid var(--acc);display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+    .flip-back{background:var(--acc);transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;color:white;gap:12px}
+    .card-icon-big{font-size:2.4rem}
+    .card-num{font-size:.72rem;font-weight:700;letter-spacing:2px;color:var(--acc)}
+    .flip-front h3{font-size:1.05rem;font-weight:700;color:#2D2D2D;line-height:1.4}
+    .flip-front p{font-size:.85rem;color:#666;line-height:1.7}
+    .flip-hint{font-size:.75rem;color:#bbb;margin-top:auto}
+    .flip-back h3{font-size:1.05rem;font-weight:700;color:white}
+    .flip-back p{font-size:.85rem;color:rgba(255,255,255,.9);line-height:1.7}
+    .flip-effect{font-size:.8rem;background:rgba(255,255,255,.25);border-radius:100px;padding:4px 12px;display:inline-block;margin-top:2px}
+    /* 뒷면 전문보기 버튼 */
+    .read-more-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.6);border-radius:100px;padding:6px 14px;font-size:.78rem;font-weight:700;color:white;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s}
+    .read-more-btn:hover{background:rgba(255,255,255,.35)}
+    /* 뒤집기 토글 버튼 (앞면 하단) */
+    .flip-toggle{font-size:.75rem;color:#bbb;margin-top:auto;background:none;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;padding:0;display:flex;align-items:center;gap:4px}
+    .flip-toggle:hover{color:#888}
+
+    /* 투표 */
+    .vote-section{max-width:700px;margin:0 auto;padding:52px 20px 64px;text-align:center}
+    .vote-title{font-family:'Gaegu',cursive;font-size:clamp(1.4rem,4vw,2rem);margin-bottom:8px;color:#2D2D2D}
+    .vote-sub{font-size:.9rem;color:#888;margin-bottom:6px}
+    .vote-notice{font-size:.78rem;color:#bbb;margin-bottom:24px}
+    .vote-btn{display:flex;align-items:center;gap:10px;width:100%;background:white;border:2px solid #eee;border-radius:14px;padding:14px 18px;cursor:pointer;margin-bottom:10px;text-align:left;transition:all .2s;font-family:'Noto Sans KR',sans-serif;font-size:.92rem;font-weight:500;color:#2D2D2D}
+    .vote-btn:hover:not(:disabled){border-color:#FFB830;transform:translateX(4px)}
+    .vote-btn.voted{border-color:var(--bcolor);background:linear-gradient(to right,rgba(255,255,255,1),rgba(255,255,255,.95))}
+    .vote-btn:disabled{cursor:default}
+    .vote-icon{font-size:1.3rem}
+    .vote-bar-wrap{flex:1;background:#f0f0f0;border-radius:100px;height:8px;overflow:hidden}
+    .vote-bar{height:100%;border-radius:100px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+    .vote-pct{font-size:.8rem;font-weight:700;color:#888;min-width:36px;text-align:right}
+    .vote-total{font-size:.82rem;color:#aaa;margin-top:10px}
+    .vote-change{font-size:.78rem;color:#bbb;margin-top:8px}
+
+    /* 모달 */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:white;border-radius:24px;max-width:680px;width:100%;max-height:85vh;overflow-y:auto;position:relative}
+    .modal-header{position:sticky;top:0;background:white;border-radius:24px 24px 0 0;padding:24px 28px 16px;border-bottom:1px solid #f0f0f0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;z-index:1}
+    .modal-header-left{display:flex;align-items:center;gap:12px}
+    .modal-icon{font-size:2rem}
+    .modal-title{font-size:1.1rem;font-weight:700;color:#2D2D2D;line-height:1.3}
+    .modal-num{font-size:.72rem;font-weight:700;letter-spacing:2px;color:#aaa;margin-bottom:3px}
+    .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:#aaa;flex-shrink:0;padding:2px;line-height:1}
+    .modal-close:hover{color:#333}
+    .modal-body{padding:24px 28px 32px}
+    .modal-section{margin-bottom:20px}
+    .modal-section-title{font-size:.72rem;font-weight:700;letter-spacing:2px;margin-bottom:8px}
+    .modal-section p{font-size:.95rem;color:#444;line-height:1.9}
+    .modal-source{font-size:.78rem;color:#aaa;margin-top:8px;padding:6px 12px;background:#f8f8f8;border-radius:8px;display:inline-block}
+    .modal-divider{height:1px;background:#f0f0f0;margin:20px 0}
+
+    /* 갤러리 */
+    .gallery{max-width:1100px;margin:0 auto;padding:20px 20px 64px}
+    .gallery-title{font-family:'Gaegu',cursive;font-size:clamp(1.6rem,4vw,2.2rem);text-align:center;margin-bottom:8px;color:#2D2D2D}
+    .gallery-sub{text-align:center;color:#888;font-size:.9rem;margin-bottom:28px}
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+    .g-item{border-radius:18px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.1);transition:transform .25s,box-shadow .25s}
+    .g-item:hover{transform:scale(1.04) rotate(-1deg);box-shadow:0 12px 36px rgba(0,0,0,.18)}
+    .g-item img{width:100%;height:100%;object-fit:cover;display:block}
+    .g-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.65));color:white;padding:18px 12px 10px;font-size:.82rem;font-weight:700}
+    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;padding:20px}
+    .lightbox.open{display:flex}
+    .lightbox img{max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain}
+    .lb-close{position:absolute;top:20px;right:24px;color:white;font-size:2rem;cursor:pointer;background:none;border:none;line-height:1}
+
+    /* 출처 섹션 */
+    .sources{max-width:780px;margin:0 auto;padding:0 20px 60px}
+    .sources-title{font-family:'Gaegu',cursive;font-size:1.3rem;color:#2D2D2D;margin-bottom:16px;text-align:center}
+    .sources-box{background:white;border-radius:16px;padding:24px 28px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+    .sources-box ol{padding-left:20px}
+    .sources-box li{font-size:.88rem;color:#555;line-height:1.9;padding:3px 0;border-bottom:1px solid #f5f5f5}
+    .sources-box li:last-child{border-bottom:none}
+    .sources-box li span{color:#aaa;font-size:.8rem;margin-left:6px}
+
+    /* 클로징 */
+    .closing{background:linear-gradient(160deg,#FFF3C4,#FFE0E0,#C8F0FF);padding:72px 20px;text-align:center}
+    .closing h2{font-family:'Gaegu',cursive;font-size:clamp(1.4rem,4vw,2.2rem);margin-bottom:16px;color:#2D2D2D}
+    .closing p{font-size:.98rem;color:#555;line-height:2;max-width:600px;margin:0 auto 28px}
+    .pop-btn{background:#FF6B6B;color:white;border:none;border-radius:100px;padding:14px 32px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:transform .15s,background .15s;box-shadow:0 4px 20px rgba(255,107,107,.35)}
+    .pop-btn:hover{transform:scale(1.05);background:#e85555}
+    .pop-btn:active{transform:scale(.97)}
+    .cheer-count{font-size:.9rem;color:#888;margin-top:14px;transition:all .3s}
+    .cheer-count strong{font-size:1.6rem;font-weight:900;color:#FF6B6B;font-family:'Gaegu',cursive;display:block;line-height:1.2;margin-bottom:4px}
+    .cheer-hearts{font-size:1.1rem;letter-spacing:2px;display:block;margin-top:4px;min-height:1.6rem}
+    .heart-pop{display:inline-block;animation:heartPop .5s ease forwards}
+    @keyframes heartPop{0%{transform:scale(0) translateY(0);opacity:1}60%{transform:scale(1.4) translateY(-8px);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}
+    footer{background:#2D2D2D;color:#aaa;text-align:center;padding:24px;font-size:.83rem;line-height:1.9}
+    footer strong{color:white}
+    @media(max-width:600px){.cards-grid{grid-template-columns:1fr}.gallery-grid{grid-template-columns:repeat(2,1fr);gap:10px}.stats-row{gap:16px}.modal-body,.modal-header{padding:18px 20px}.sources-box{padding:18px 20px}}
+  </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-emoji">☀️🌡️💧🐾🧊</span>
+  <h1>서초구의 폭염,<br><span>우리가 해결할게요!</span></h1>
+  <p class="hero-sub">서원초 4학년 4반 학생들이 실제 데이터를 조사하고<br>우리 동네 폭염 문제를 직접 해결하는 5가지 정책을 제안합니다.</p>
+  <div class="hero-badge">📋 서초구청 제출용 학생 정책 제안서 · 2026년 5월</div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <h2>📊 저희가 찾은 데이터</h2>
+  <div class="stats-row">
+    <div class="stat-box" onclick="openChart('age')">
+      <div class="stat-num">62.1%</div>
+      <div class="stat-label">폭염 사망자 중<br>60세 이상 어르신 비율</div>
+      <div class="stat-click-hint">▸ 눌러서 차트 보기</div>
+    </div>
+    <div class="stat-box" onclick="openChart('place')">
+      <div class="stat-num">1,431명</div>
+      <div class="stat-label">실외 작업장<br>온열질환 환자 수 (최다)</div>
+      <div class="stat-click-hint">▸ 눌러서 차트 보기</div>
+    </div>
+    <div class="stat-box" onclick="openChart('time')">
+      <div class="stat-num">12시~5시</div>
+      <div class="stat-label">하루 중<br>폭염이 가장 위험한 시간</div>
+      <div class="stat-click-hint">▸ 눌러서 차트 보기</div>
+    </div>
+    <div class="stat-box" onclick="openChart('outdoor')">
+      <div class="stat-num">79.3%</div>
+      <div class="stat-label">폭염 사망자 중<br>야외에서 돌아가신 비율</div>
+      <div class="stat-click-hint">▸ 눌러서 차트 보기</div>
+    </div>
+    <div class="stat-box" onclick="openChart('job')">
+      <div class="stat-num">1,160명</div>
+      <div class="stat-label">단순 노무 종사자<br>온열질환 환자 수 (직업별 최다)</div>
+      <div class="stat-click-hint">▸ 눌러서 차트 보기</div>
+    </div>
+  </div>
+</section>
+
+<!-- 차트 모달들 -->
+<div class="chart-modal-overlay" id="cm-age" onclick="closeChart('age')">
+  <div class="chart-modal-box" onclick="event.stopPropagation()">
+    <button class="chart-modal-close" onclick="closeChart('age')">✕</button>
+    <div class="chart-title">연령별 폭염 추정 사망자</div>
+    <div class="chart-sub">2025년 · 질병관리청 온열질환 응급실감시체계</div>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label">80세 이상</span><div class="bar-track"><div class="bar-fill highlight" style="width:34%;background:#FF6B6B">10명</div></div></div>
+      <div class="bar-row"><span class="bar-label">70대</span><div class="bar-track"><div class="bar-fill highlight" style="width:24%;background:#FF9F43">7명</div></div></div>
+      <div class="bar-row"><span class="bar-label">60대</span><div class="bar-track"><div class="bar-fill" style="width:3.4%;background:#FFB830">1명</div></div></div>
+      <div class="bar-row"><span class="bar-label">50대</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:#aaa">6명</div></div></div>
+      <div class="bar-row"><span class="bar-label">40대</span><div class="bar-track"><div class="bar-fill" style="width:10%;background:#ccc">3명</div></div></div>
+      <div class="bar-row"><span class="bar-label">30대 이하</span><div class="bar-track"><div class="bar-fill" style="width:6.8%;background:#ddd;color:#888">2명</div></div></div>
+    </div>
+    <div class="chart-note">⚠️ 전체 사망자 29명 중 <strong>60세 이상이 18명(62.1%)</strong>으로 가장 많습니다. 어르신들은 더위를 느끼는 감각이 약해 스스로 위험한지 모르는 경우가 많습니다.</div>
+    <button class="source-btn" onclick="toggleSource('src-age')">📎 출처 보기</button>
+    <div class="source-detail" id="src-age">질병관리청 (2025). 「2025년 온열질환 응급실감시체계 운영 결과」 보도자료 (2025.10.16.). 붙임2 사망 신고사례.</div>
+  </div>
+</div>
+
+<div class="chart-modal-overlay" id="cm-place" onclick="closeChart('place')">
+  <div class="chart-modal-box" onclick="event.stopPropagation()">
+    <button class="chart-modal-close" onclick="closeChart('place')">✕</button>
+    <div class="chart-title">발생 장소별 온열질환 환자 수</div>
+    <div class="chart-sub">2025년 실외 발생 기준 · 질병관리청</div>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label wide">실외 작업장</span><div class="bar-track"><div class="bar-fill highlight" style="width:100%;background:#FF6B6B">1,431명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">논·밭</span><div class="bar-track"><div class="bar-fill" style="width:37.9%;background:#FFB830">542명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">길가</span><div class="bar-track"><div class="bar-fill" style="width:36.5%;background:#FFB830">522명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">실외 기타</span><div class="bar-track"><div class="bar-fill" style="width:31.1%;background:#aaa">445명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">운동장·공원</span><div class="bar-track"><div class="bar-fill" style="width:16.6%;background:#ccc">237명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">주거지 주변</span><div class="bar-track"><div class="bar-fill" style="width:13%;background:#ddd;color:#888">186명</div></div></div>
+    </div>
+    <div class="chart-note">⚠️ 실외 작업장이 전체 발생 장소 중 <strong>1위(32.1%)</strong>입니다. 야외에서 일하는 노동자들이 가장 위험합니다.</div>
+    <button class="source-btn" onclick="toggleSource('src-place')">📎 출처 보기</button>
+    <div class="source-detail" id="src-place">질병관리청 (2025). 「2025년 온열질환 응급실감시체계 운영 결과」 보도자료 (2025.10.16.). 발생장소별 온열질환자 현황.</div>
+  </div>
+</div>
+
+<div class="chart-modal-overlay" id="cm-time" onclick="closeChart('time')">
+  <div class="chart-modal-box" onclick="event.stopPropagation()">
+    <button class="chart-modal-close" onclick="closeChart('time')">✕</button>
+    <div class="chart-title">발생 시간대별 온열질환 환자 수</div>
+    <div class="chart-sub">2025년 · 질병관리청</div>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label">0~6시</span><div class="bar-track"><div class="bar-fill" style="width:10%;background:#aaa">88명</div></div></div>
+      <div class="bar-row"><span class="bar-label">6~10시</span><div class="bar-track"><div class="bar-fill" style="width:59%;background:#FFB830">521명</div></div></div>
+      <div class="bar-row"><span class="bar-label">10~11시</span><div class="bar-track"><div class="bar-fill" style="width:41%;background:#FF9F43">361명</div></div></div>
+      <div class="bar-row"><span class="bar-label">11~12시</span><div class="bar-track"><div class="bar-fill" style="width:43%;background:#FF9F43">382명</div></div></div>
+      <div class="bar-row"><span class="bar-label">12~13시</span><div class="bar-track"><div class="bar-fill highlight" style="width:46%;background:#FF6B6B">409명</div></div></div>
+      <div class="bar-row"><span class="bar-label">13~14시</span><div class="bar-track"><div class="bar-fill highlight" style="width:44%;background:#FF6B6B">387명</div></div></div>
+      <div class="bar-row"><span class="bar-label">14~15시</span><div class="bar-track"><div class="bar-fill highlight" style="width:49%;background:#FF6B6B">438명</div></div></div>
+      <div class="bar-row"><span class="bar-label">15~16시</span><div class="bar-track"><div class="bar-fill highlight" style="width:54%;background:#FF6B6B">481명</div></div></div>
+      <div class="bar-row"><span class="bar-label">16~17시</span><div class="bar-track"><div class="bar-fill highlight" style="width:49%;background:#FF6B6B">436명</div></div></div>
+      <div class="bar-row"><span class="bar-label">17~18시</span><div class="bar-track"><div class="bar-fill" style="width:37%;background:#FFB830">323명</div></div></div>
+      <div class="bar-row"><span class="bar-label">18~24시</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:#aaa">634명</div></div></div>
+    </div>
+    <div class="chart-note">⚠️ <strong>낮 12시~오후 5시</strong>에 환자가 집중됩니다. 이 시간대에 체육 수업이 많아 어린이들도 특히 위험합니다.</div>
+    <button class="source-btn" onclick="toggleSource('src-time')">📎 출처 보기</button>
+    <div class="source-detail" id="src-time">질병관리청 (2025). 「2025년 온열질환 응급실감시체계 운영 결과」 보도자료 (2025.10.16.). 발생시간별 온열질환자 현황.</div>
+  </div>
+</div>
+
+<div class="chart-modal-overlay" id="cm-outdoor" onclick="closeChart('outdoor')">
+  <div class="chart-modal-box" onclick="event.stopPropagation()">
+    <button class="chart-modal-close" onclick="closeChart('outdoor')">✕</button>
+    <div class="chart-title">폭염 추정 사망자 발생 장소</div>
+    <div class="chart-sub">2025년 총 29명 · 질병관리청</div>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label">실외</span><div class="bar-track"><div class="bar-fill highlight" style="width:79.3%;background:#FF6B6B">23명 (79.3%)</div></div></div>
+      <div class="bar-row"><span class="bar-label">실내</span><div class="bar-track"><div class="bar-fill" style="width:20.7%;background:#aaa">6명 (20.7%)</div></div></div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:10px">실외 세부 장소</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">길가</span><div class="bar-track"><div class="bar-fill" style="width:26%;background:#FF9F43">6명</div></div></div>
+        <div class="bar-row"><span class="bar-label">논·밭</span><div class="bar-track"><div class="bar-fill" style="width:21.7%;background:#FF9F43">5명</div></div></div>
+        <div class="bar-row"><span class="bar-label">주거지 주변</span><div class="bar-track"><div class="bar-fill" style="width:17.4%;background:#FFB830">4명</div></div></div>
+        <div class="bar-row"><span class="bar-label">산·집·기타</span><div class="bar-track"><div class="bar-fill" style="width:13%;background:#ccc">각 3명</div></div></div>
+      </div>
+    </div>
+    <div class="chart-note">⚠️ 사망자의 <strong>79.3%가 실외</strong>에서 발생했습니다. 길가나 논밭처럼 그늘이 없는 곳이 특히 위험합니다.</div>
+    <button class="source-btn" onclick="toggleSource('src-outdoor')">📎 출처 보기</button>
+    <div class="source-detail" id="src-outdoor">질병관리청 (2025). 「2025년 온열질환 응급실감시체계 운영 결과」 보도자료 (2025.10.16.). 붙임2 사망 신고사례.</div>
+  </div>
+</div>
+
+<div class="chart-modal-overlay" id="cm-job" onclick="closeChart('job')">
+  <div class="chart-modal-box" onclick="event.stopPropagation()">
+    <button class="chart-modal-close" onclick="closeChart('job')">✕</button>
+    <div class="chart-title">직업별 온열질환 환자 수</div>
+    <div class="chart-sub">2025년 (미상·기타 제외) · 질병관리청</div>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label wide">단순 노무 종사자</span><div class="bar-track"><div class="bar-fill highlight" style="width:100%;background:#FF6B6B">1,160명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">무직</span><div class="bar-track"><div class="bar-fill" style="width:50.8%;background:#FFB830">589명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">농림어업 종사자</span><div class="bar-track"><div class="bar-fill" style="width:30%;background:#FF9F43">348명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">전문가·관련직</span><div class="bar-track"><div class="bar-fill" style="width:15.9%;background:#aaa">184명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">장치·기계 조작</span><div class="bar-track"><div class="bar-fill" style="width:14.3%;background:#ccc">166명</div></div></div>
+      <div class="bar-row"><span class="bar-label wide">학생</span><div class="bar-track"><div class="bar-fill" style="width:14.3%;background:#4ECDC4">166명</div></div></div>
+    </div>
+    <div class="chart-note">⚠️ <strong>단순 노무 종사자가 1,160명(26%)</strong>으로 가장 많습니다. 힘을 쓰는 야외 작업이 많아 온열질환에 특히 취약합니다.</div>
+    <button class="source-btn" onclick="toggleSource('src-job')">📎 출처 보기</button>
+    <div class="source-detail" id="src-job">질병관리청 (2025). 「2025년 온열질환 응급실감시체계 운영 결과」 보도자료 (2025.10.16.). 직업별 온열질환자 현황.</div>
+  </div>
+</div>
+
+<!-- PROPOSALS -->
+<section class="proposals">
+  <div class="section-label">OUR PROPOSALS</div>
+  <div class="proposals-title">📝 5가지 정책 제안</div>
+  <div class="proposals-hint">카드를 누르면 뒤집혀요 · 뒤집힌 카드에서 📄 전문 보기 가능</div>
+  <div class="cards-grid">
+
+    <!-- 제안 01: 쿨링포그 -->
+    <div class="flip-card" id="card-fog" style="--acc:#FF6B6B" onclick="toggleFlip('fog')">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="card-icon-big">🌫️</div>
+          <div class="card-num">제안 01</div>
+          <h3>야외노동자를 위한<br>쿨링포그 설치</h3>
+          <p>실외 작업장 온열질환 환자가 1,431명으로 직종 중 가장 많습니다. 2025년 7월엔 야외 측량 작업 중 50대 노동자가 폭염으로 사망한 사건도 있었어요.</p>
+          <div class="flip-toggle">👆 눌러서 제안 확인하기 →</div>
+        </div>
+        <div class="flip-back">
+          <h3>💡 우리의 제안</h3>
+          <p>야외 작업장과 사거리에 쿨링포그를 설치해 주세요! 쿨링포그가 없으면 야외노동자 사망자 수가 계속 늘어나지만, 있다면 지나가는 모든 사람도 함께 시원한 여름을 보낼 수 있어요.</p>
+          <span class="flip-effect">✅ 온열 질환자 및 사망자 감소</span>
+          <button class="read-more-btn" onclick="openModal('fog');event.stopPropagation()">📄 전문 보기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 제안 02: 야외노동자 쉼터 -->
+    <div class="flip-card" id="card-shelter" style="--acc:#FFB830" onclick="toggleFlip('shelter')">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="card-icon-big">🏠</div>
+          <div class="card-num">제안 02</div>
+          <h3>야외노동자 전용<br>쉼터 설치</h3>
+          <p>단순 노무 종사자 1,160명(26%), 실외 작업장 1,431명(32.1%) 등 잠깐 쉴 공간도 없이 폭염 속에서 일하는 분들이 너무 많아요.</p>
+          <div class="flip-toggle">👆 눌러서 제안 확인하기 →</div>
+        </div>
+        <div class="flip-back">
+          <h3>💡 우리의 제안</h3>
+          <p>서초구 사거리 코너마다 12평 규모의 쉼터를 설치해 주세요. 에어컨, 냉장 음료(주스·물), 냉동 아이스크림, 체온 측정기, 의자까지 갖추면 좋겠어요!</p>
+          <span class="flip-effect">✅ 열사병 예방 · 작업 만족도 향상</span>
+          <button class="read-more-btn" onclick="openModal('shelter');event.stopPropagation()">📄 전문 보기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 제안 03: 어르신 넥쿨링 -->
+    <div class="flip-card" id="card-neckcool" style="--acc:#4ECDC4" onclick="toggleFlip('neckcool')">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="card-icon-big">🧊</div>
+          <div class="card-num">제안 03</div>
+          <h3>어르신 넥쿨링<br>무료 지원</h3>
+          <p>지난 여름 폭염으로 돌아가신 29명 중 62.1%가 60세 이상 어르신이에요. 어르신들은 더위를 잘 못 느껴서 스스로 위험한지 모르는 경우가 많아요.</p>
+          <div class="flip-toggle">👆 눌러서 제안 확인하기 →</div>
+        </div>
+        <div class="flip-back">
+          <h3>💡 우리의 제안</h3>
+          <p>독거 어르신들에게 넥쿨링을 무료로 나눠주세요! 물에 적시거나 얼려서 쓰는 넥쿨링은 가격도 저렴하고 목을 식혀줘서 온열질환 예방에 정말 효과적이에요.</p>
+          <span class="flip-effect">✅ 어르신 온열질환 사망자 감소</span>
+          <button class="read-more-btn" onclick="openModal('neckcool');event.stopPropagation()">📄 전문 보기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 제안 04: 학교 넥쿨러 -->
+    <div class="flip-card" id="card-neckcooler" style="--acc:#5BC4F5" onclick="toggleFlip('neckcooler')">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="card-icon-big">🎽</div>
+          <div class="card-num">제안 04</div>
+          <h3>학교 넥쿨러<br>대여 시스템</h3>
+          <p>에어컨 온도 때문에 춥다·덥다 다툼이 생겨요. 낮 12시~5시가 가장 위험한 시간인데 이때 체육 수업이 많아서 어린이들이 특히 위험해요.</p>
+          <div class="flip-toggle">👆 눌러서 제안 확인하기 →</div>
+        </div>
+        <div class="flip-back">
+          <h3>💡 우리의 제안</h3>
+          <p>구청에서 넥쿨러를 사서 각 초등학교에 지원해 주세요. 1교시에 나눠주고 5교시에 반납하는 대여 시스템을 만들면 더운 학생·추운 학생 싸움도 없어지고 모두 행복!</p>
+          <span class="flip-effect">✅ 어린이 온열질환 예방</span>
+          <button class="read-more-btn" onclick="openModal('neckcooler');event.stopPropagation()">📄 전문 보기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 제안 05: 반려동물 쉼터 -->
+    <div class="flip-card" id="card-pet" style="--acc:#6BCB77" onclick="toggleFlip('pet')">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="card-icon-big">🐾</div>
+          <div class="card-num">제안 05</div>
+          <h3>반려동물·사람 모두를 위한<br>그늘 쉼터</h3>
+          <p>여름 아스팔트는 70도를 넘어 반려견 발바닥에 화상을 입힐 수 있어요. 열사병에 걸리면 침이 끈적해지고 잇몸 색이 바뀌는데, 치료도 오래 걸려요.</p>
+          <div class="flip-toggle">👆 눌러서 제안 확인하기 →</div>
+        </div>
+        <div class="flip-back">
+          <h3>💡 우리의 제안</h3>
+          <p>산책로 주요 지점에 반려동물이 함께 쉴 그늘 쉼터를 설치해 주세요! 반려동물 물그릇, 냉장 음료, 그늘이 있으면 강아지도 보호자도 이웃도 모두 반가운 공간이 될 거예요.</p>
+          <span class="flip-effect">✅ 반려동물 열사병 예방 · 지역 커뮤니티</span>
+          <button class="read-more-btn" onclick="openModal('pet');event.stopPropagation()">📄 전문 보기</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 투표 -->
+<section class="vote-section">
+  <div class="vote-title">🗳️ 가장 중요한 제안은?</div>
+  <div class="vote-sub">한 가지만 골라주세요!</div>
+  <div class="vote-notice" id="vote-notice">✅ 투표는 한 번만 할 수 있어요</div>
+  <div id="vote-container"></div>
+  <div class="vote-total" id="vote-total">아직 0명이 투표했어요</div>
+</section>
+
+<!-- 갤러리 -->
+<section class="gallery">
+  <div class="section-label">STUDENT WORK</div>
+  <div class="gallery-title">🎨 우리가 직접 만든 포스터</div>
+  <div class="gallery-sub">4학년 4반 학생들이 데이터를 직접 조사하고 그린 정책 제안 포스터예요 (눌러서 크게 보세요!)</div>
+  <div class="gallery-grid">
+    <div class="g-item" onclick="openLb('images/IMG_6713.jpg')"><img src="images/IMG_6713.jpg" alt="쿨링 넥을 나눠주자" loading="lazy"><div class="g-label">쿨링 넥을 나눠주자</div></div>
+    <div class="g-item" onclick="openLb('images/IMG_6712.jpg')"><img src="images/IMG_6712.jpg" alt="강아지를 위한 무더위 쉼터" loading="lazy"><div class="g-label">강아지를 위한 무더위 쉼터</div></div>
+    <div class="g-item" onclick="openLb('images/IMG_6711.jpg')"><img src="images/IMG_6711.jpg" alt="야외 노동자 쉼터" loading="lazy"><div class="g-label">야외 노동자 쉼터</div></div>
+    <div class="g-item" onclick="openLb('images/IMG_6710.jpg')"><img src="images/IMG_6710.jpg" alt="모두를 위한 쉼터" loading="lazy"><div class="g-label">모두를 위한 쉼터</div></div>
+    <div class="g-item" onclick="openLb('images/IMG_6709.jpg')"><img src="images/IMG_6709.jpg" alt="어린이를 위한 넥쿨러 대여" loading="lazy"><div class="g-label">어린이를 위한 넥쿨러 대여</div></div>
+    <div class="g-item" onclick="openLb('images/IMG_6708.jpg')"><img src="images/IMG_6708.jpg" alt="야외노동자를 위한 쿨링포그" loading="lazy"><div class="g-label">야외노동자를 위한 쿨링포그</div></div>
+    <div class="g-item" onclick="openLb('images/IMG_6707.jpg')"><img src="images/IMG_6707.jpg" alt="어르신을 위한 넥쿨링 지원" loading="lazy"><div class="g-label">어르신을 위한 넥쿨링 지원</div></div>
+    <div class="g-item" onclick="openLb('images/IMG_6706.jpg')"><img src="images/IMG_6706.jpg" alt="반려동물 쉼터를 만듭시다" loading="lazy"><div class="g-label">반려동물 쉼터를 만듭시다</div></div>
+  </div>
+</section>
+
+<div class="lightbox" id="lb" onclick="closeLb()">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<!-- 출처 섹션 -->
+<section class="sources">
+  <div class="sources-title">📎 데이터 출처</div>
+  <div class="sources-box">
+    <ol>
+      <li>
+        <button class="source-btn" style="margin-top:0;margin-bottom:2px" onclick="toggleSource('s1')">📎 질병관리청 (2025) — 온열질환 응급실감시체계 운영 결과</button>
+        <div class="source-detail" id="s1">질병관리청 (2025). 「2025년 온열질환 응급실감시체계 운영 결과」 보도자료, 2025.10.16.<br>→ 실외 작업장 1,431명(32.1%), 단순 노무 종사자 1,160명(26%), 직업별·장소별 수치 전반 인용</div>
+      </li>
+      <li>
+        <button class="source-btn" style="margin-top:0;margin-bottom:2px" onclick="toggleSource('s2')">📎 질병관리청 (2025) — 폭염 추정 사망자 분석</button>
+        <div class="source-detail" id="s2">질병관리청 (2025). 「2025년 온열질환 응급실감시체계」 붙임2 사망 신고사례, 2025.10.16.<br>→ 사망자 29명, 60세 이상 62.1%, 실외 사망 79.3% 수치 인용</div>
+      </li>
+      <li>
+        <button class="source-btn" style="margin-top:0;margin-bottom:2px" onclick="toggleSource('s3')">📎 경향신문 (2025.7.29.) — 김제 야외 노동자 폭염 사망</button>
+        <div class="source-detail" id="s3">김창효 기자 (2025.7.29.). 「김제서 폭염 속 야외 작업 50대 노동자 사망···"예견된 재난"」. 경향신문.<br>→ 사고 발생일 2025.7.24., 전북 김제, 50대 야외 측량 노동자 열사병 사망 사례 인용</div>
+      </li>
+      <li>
+        <button class="source-btn" style="margin-top:0;margin-bottom:2px" onclick="toggleSource('s4')">📎 동아일보 (2025.7.30.) — 반려동물 열사병 사례</button>
+        <div class="source-detail" id="s4">동아일보 (2025.7.30.). 강아지 열사병 관련 기사.<br>→ 반려동물 쉼터 제안 근거 사례로 인용</div>
+      </li>
+      <li style="padding-top:10px;border-top:1px solid #eee;color:#888;font-size:.85rem">
+        📝 우리 반 설문 (2026.5) — 4학년 4반 33명 중 17명이 사거리가 가장 덥다고 응답
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- 클로징 -->
+<section class="closing">
+  <h2>어린이도 지역 문제를<br>바꿀 수 있습니다 ✊</h2>
+  <p>저희는 직접 데이터를 찾고, 원인을 분석하고, 해결책을 만들어 구청에 제안했습니다. 어린이라고 해서 사회 문제에 목소리를 낼 수 없는 건 아닙니다. 서초구청이 귀 기울여 주신다면, 저희의 제안이 서초구를 더 시원하고 안전한 동네로 바꾸는 첫걸음이 될 거라고 믿습니다.</p>
+  <button class="pop-btn" id="cheer-btn" onclick="sendCheer()">💛 응원의 마음 보내기!</button>
+  <div class="cheer-count" id="cheer-count" style="display:none">
+    <strong id="cheer-num">0</strong>
+    명이 응원을 보냈어요
+    <span class="cheer-hearts" id="cheer-hearts"></span>
+  </div>
+</section>
+
+<footer><strong>서울 서원초등학교 4학년 4반</strong><br>2026년 5월 · 서초구청 폭염 대책 학생 정책 제안</footer>
+
+<!-- 모달들 -->
+<div class="modal-overlay" id="modal-fog" onclick="closeModal('fog')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-left"><div class="modal-icon">🌫️</div><div><div class="modal-num">제안 01 · 전문</div><div class="modal-title">야외노동자를 위해 쿨링포그를 제안합니다</div></div></div>
+      <button class="modal-close" onclick="closeModal('fog')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#FF6B6B">🔍 문제 상황</div>
+        <p>우리 동네에서는 야외 노동자가 뜨거운 여름에 야외에서 일을 하며 덥게 여름을 보내고 있습니다. 왜 이런 문제를 해결해야 하냐면, 야외 노동자들도 시원하게 일해야 하기 때문입니다.</p>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#FF6B6B">📊 데이터와 근거</div>
+        <p>질병관리청 데이터에 따르면, 실외 작업장 환자수가 가장 많습니다. 경향신문 뉴스에 따르면, 전북 김제에서 2025년 7월 24일 오후 폭염 속에서 야외 측량 작업을 하던 50대 노동자가 갑자기 숨졌다는 이야기가 있습니다.</p>
+        <div class="modal-source">출처: 질병관리청 · 경향신문 (2025.7.24)</div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#FF6B6B">💡 제안 내용</div>
+        <p>쿨링포그를 설치하지 않으면 야외노동자 사망자 수가 늘어나고 폭염으로 인한 부상자도 늘어나기 쉽습니다. 쿨링포그가 있다면 야외노동자들과 지나가는 사람들이 시원한 여름을 보낼 수 있습니다.</p>
+        <p style="margin-top:12px">이렇게 하면 더운 날에도 더위를 식히고 폭염을 잘 예방할 수 있기 때문에 쿨링포그를 설치하는 것을 정말 강력하게 제안합니다. 안전을 위해 꼭 설치해 주시기 바랍니다.</p>
+        <p style="margin-top:12px;font-style:italic;color:#bbb;font-size:.88rem">지금까지 서울 서원초 4학년 4반 모둠의 의견을 들어주셔서 감사합니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-shelter" onclick="closeModal('shelter')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-left"><div class="modal-icon">🏠</div><div><div class="modal-num">제안 02 · 전문</div><div class="modal-title">야외 노동자 쉼터</div></div></div>
+      <button class="modal-close" onclick="closeModal('shelter')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#FFB830">🔍 문제 상황</div>
+        <p>우리 동네에 야외노동자가 더위로 힘든 상황입니다. 이 문제를 해결해야 하는 이유는 열사병과 사망을 예방하기 위해서입니다. 지구가 AI 예측보다 더 뜨거워져서 일 시간이 늘어나고, 더위 때문에 야외 노동자가 위험하기 때문입니다.</p>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#FFB830">📊 데이터와 근거</div>
+        <p>단순 노무 종사자 환자 수는 1,160명(26%), 실외 작업장 환자 수는 1,431명(32.1%)으로 가장 많습니다. 농림어업 종사자는 348명(7.8%), 논밭 542명(12.2%), 길가 522명(11.7%), 실외 기타 445명(10%), 운동장·공원 237명(5.3%)입니다.</p>
+        <div class="modal-source">출처: 질병관리청</div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#FFB830">💡 제안 내용</div>
+        <p>구청은 사거리의 코너에 쉼터를 설치하면 됩니다. 쉼터는 12평이고, 그 안에 냉동실과 냉장실이 있어서 야외 노동자들이 쉬기 편합니다. 냉동실에는 아이스크림과 얼음컵, 냉장실에는 주스와 물이 있습니다. 쉼터 제일 뒷부분에는 의자가 있어 시원한 에어컨 바람을 느낄 수 있습니다. 쉼터 안에서 에어컨 온도를 조절할 수 있습니다 (대신 장난하지 않아야 함). 체온 측정기와 무전기도 설치해 주세요.</p>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#FFB830">🌟 기대 효과</div>
+        <p>야외 노동자가 조금이라도 휴식을 취해 체력이 높아지면 열사병 걸릴 확률이 낮아집니다. 더 편하게 일할 수 있다면 작업 만족도가 높아지고, 지원자도 더 많아져 서초구민과 서초의 안전이 더 지켜지게 됩니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-neckcool" onclick="closeModal('neckcool')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-left"><div class="modal-icon">🧊</div><div><div class="modal-num">제안 03 · 전문</div><div class="modal-title">어르신들을 위해 넥쿨링을 지원하면 좋겠습니다</div></div></div>
+      <button class="modal-close" onclick="closeModal('neckcool')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#4ECDC4">🔍 문제 상황</div>
+        <p>우리 동네에서는 어르신들이 더위로 많이 힘드십니다. 독거 어르신들은 에어컨이 없는 집에서 힘들어하시고, 밖도 너무 더워서 나가지 않아 뼈가 약해집니다. 체온 조절이 힘드신 어르신들은 더욱 힘드실 겁니다.</p>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#4ECDC4">📊 데이터와 근거</div>
+        <p>온열질환 환자는 수만 보면 50대가 많지만, 같은 100명 중에서는 어르신이 가장 아픕니다. 지난 여름 더위로 돌아가신 분들은 총 29명이었는데, 그 중 62.1%가 60세 이상 고령층입니다. 어르신들은 더위를 잘 느끼지 못하는 탓에 자기가 아픈지 모르고 쉽게 지내는 경우가 많습니다.</p>
+        <div class="modal-source">출처: 질병관리청</div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#4ECDC4">💡 제안 내용</div>
+        <p>독거 어르신들에게 무료로 넥쿨링을 나눠주면 훨씬 시원하게 지내실 수 있습니다. 물에 적시거나 얼려서 쓰는 넥쿨링은 비싸지 않은 데다 성능도 좋습니다.</p>
+        <p style="margin-top:12px">실제로 저희 할머니는 넥쿨링을 착용하고 "확실히 목이 시원하니까 좋다"고 말씀하셨습니다. 우리 신체에서 가장 더운 부위 중 하나가 목이라서, 목을 시원하게 해주면 더위를 금방 식히고 온열질환을 막는 데 큰 도움이 됩니다.</p>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#4ECDC4">🌟 기대 효과</div>
+        <p>넥쿨링을 무료로 나눠주면 어르신들이 더위로 병을 앓거나 돌아가시는 확률이 매우 줄어들 것입니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-neckcooler" onclick="closeModal('neckcooler')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-left"><div class="modal-icon">🎽</div><div><div class="modal-num">제안 04 · 전문</div><div class="modal-title">어린이를 위해 1교시에 넥쿨러를 나눠주고 5교시에 선생님께 반납한다</div></div></div>
+      <button class="modal-close" onclick="closeModal('neckcooler')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#5BC4F5">🔍 문제 상황</div>
+        <p>학교에서 에어컨을 틀면 추운 학생도 있고 더운 학생도 있어서, 틀고 안 틀고 때문에 다툼이 일어날 수 있습니다. 에어컨을 틀면 추운 학생이 감기에 걸릴 수도 있고, 온도 조절을 하는 시간도 오래 걸립니다. 체육시간에는 너무 더워서 힘들기도 합니다.</p>
+        <p style="margin-top:12px">실제로 낮 12시~오후 5시 사이가 가장 위험한 시간대라서 실내까지 더위가 들어올 수 있고, 이 시간대에 체육을 많이 하기 때문에 어린이들이 위험할 수도 있습니다.</p>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#5BC4F5">💡 제안 내용</div>
+        <p>어린이를 위해 학교에서 1교시에 넥쿨러를 나눠 주고 5교시에 반납하는 시스템을 만들어 주시면 좋겠습니다. 더위를 많이 타는 학생들은 넥쿨러를 하고, 추위를 많이 타는 학생들은 착용하지 않으면 됩니다. 그러면 에어컨 때문에 싸움이 없어지고, 추운 학생들도 더이상 춥지 않을 것입니다.</p>
+        <p style="margin-top:12px">여름 선풍기는 나눠주기 비싸기 때문에 넥쿨러가 더 좋을 것 같습니다. 구청에서 넥쿨러를 사서 학교에 나눠주면 좋겠습니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-pet" onclick="closeModal('pet')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-left"><div class="modal-icon">🐾</div><div><div class="modal-num">제안 01+05 · 전문</div><div class="modal-title">산책할 때 더운 강아지들을 위한 무더위 쉼터를 만들자!</div></div></div>
+      <button class="modal-close" onclick="closeModal('pet')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#6BCB77">🔍 문제 상황</div>
+        <p>보더콜리 같은 개들은 하루에 산책을 3~4번 해야 하는데, 더위에 힘들어합니다. 열사병에 걸리면 침이 끈적해지고 잇몸과 혓바닥 색이 바뀝니다. 포메라니안 같이 털이 많은 종류는 더워서 얼마 못 가고 다시 돌아옵니다.</p>
+        <p style="margin-top:12px">특히 낮 12시~오후 5시는 가장 더운 시간이라 동물들이 많이 지칩니다. 이번 여름은 기후 예측이 되지 않아서 더 위험합니다.</p>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#6BCB77">📊 데이터와 근거</div>
+        <p>동아일보에서 강아지가 열사병에 걸려서 죽을 뻔 했다는 기사를 찾게 됐습니다. 지구의 온도는 아무도 예측하기 어렵게 높아지고 있습니다. 우리뿐만 아니라 동물들도 피해를 입고 있기 때문에, 우리도 동물들을 도와야 합니다.</p>
+        <div class="modal-source">출처: 동아일보 (2025.7.30.)</div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#6BCB77">💡 제안 내용</div>
+        <p>산책할 때 더운 강아지들을 위한 무더위 쉼터를 만들면 좋을 것 같습니다. 쉼터에 충분한 물이 담겨있는 냉장고를 설치하면, 물이 없는 사람들도 수분을 충전할 수 있습니다. 강아지에만 초점을 맞추지 말고 보호자에게도 초점을 맞춥시다. 보호자도 덥기 때문입니다.</p>
+        <p style="margin-top:12px">이 무더위 쉼터에서 이웃, 지인, 친구를 만날 수도 있습니다. 다양한 장점이 있는 무더위 쉼터를 설치해야 합니다!</p>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-section">
+        <div class="modal-section-title" style="color:#6BCB77">🌟 기대 효과</div>
+        <p>무더위 쉼터가 있다면 활동량 많은 강아지들도 오래 산책할 수 있고, 열사병에 걸릴 확률도 줄어들 것입니다. 강아지와 잠시 쉬어갈 때 보호자도 기쁠 것입니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 차트 모달 */
+const chartIds = {age:'cm-age', place:'cm-place', time:'cm-time', outdoor:'cm-outdoor', job:'cm-job'};
+function openChart(key) {
+  document.getElementById(chartIds[key]).classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // 바 애니메이션 트리거
+  setTimeout(() => {
+    const fills = document.querySelectorAll('#' + chartIds[key] + ' .bar-fill');
+    fills.forEach(f => { const w = f.style.width; f.style.width='0'; setTimeout(()=>f.style.width=w, 50); });
+  }, 30);
+}
+function closeChart(key) {
+  document.getElementById(chartIds[key]).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function toggleSource(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+/* 카드 뒤집기 - hover 없이 클릭만 */
+function toggleFlip(id) {
+  document.getElementById('card-' + id).classList.toggle('flipped');
+}
+
+/* 투표 - 한 번만 */
+const proposals = [
+  {icon:'🌫️', label:'쿨링포그 설치', color:'#FF6B6B'},
+  {icon:'🏠', label:'야외노동자 쉼터', color:'#FFB830'},
+  {icon:'🧊', label:'어르신 넥쿨링 지원', color:'#4ECDC4'},
+  {icon:'🎽', label:'학교 넥쿨러 대여', color:'#5BC4F5'},
+  {icon:'🐾', label:'반려동물 그늘 쉼터', color:'#6BCB77'},
+];
+const votes = [0,0,0,0,0];
+let hasVoted = false;
+
+function renderVotes() {
+  const total = votes.reduce((a,b) => a+b, 0);
+  document.getElementById('vote-container').innerHTML = proposals.map((p,i) => {
+    const pct = total ? Math.round(votes[i]/total*100) : 0;
+    const isVoted = hasVoted && votes[i] > 0 && pct === Math.max(...votes.map((_,j) => total ? Math.round(votes[j]/total*100) : 0)) && votes[i] === Math.max(...votes);
+    return `<button class="vote-btn${hasVoted && votes[i]===Math.max(...votes) && votes[i]>0?' voted':''}"
+      style="--bcolor:${p.color}" onclick="doVote(${i})" ${hasVoted?'disabled':''}>
+      <span class="vote-icon">${p.icon}</span>
+      <span style="flex:0 0 150px;font-size:.9rem;text-align:left">${p.label}</span>
+      <div class="vote-bar-wrap"><div class="vote-bar" style="width:${pct}%;background:${p.color}"></div></div>
+      <span class="vote-pct">${hasVoted ? pct+'%' : ''}</span>
+    </button>`;
+  }).join('');
+  document.getElementById('vote-total').textContent = `총 ${total}명이 투표했어요`;
+  if (hasVoted) {
+    document.getElementById('vote-notice').textContent = '✅ 투표 완료! 결과를 확인하세요';
+    document.getElementById('vote-notice').style.color = '#4ECDC4';
+  }
+}
+
+function doVote(i) {
+  if (hasVoted) return;
+  votes[i]++;
+  hasVoted = true;
+  renderVotes();
+  miniPop();
+}
+
+renderVotes();
+
+/* 모달 */
+const modalIds = {fog:'modal-fog', shelter:'modal-shelter', neckcool:'modal-neckcool', neckcooler:'modal-neckcooler', pet:'modal-pet'};
+function openModal(key) {
+  document.getElementById(modalIds[key]).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(key) {
+  document.getElementById(modalIds[key]).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* 라이트박스 */
+function openLb(src) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    Object.keys(modalIds).forEach(k => document.getElementById(modalIds[k]).classList.remove('open'));
+    Object.keys(chartIds).forEach(k => document.getElementById(chartIds[k]).classList.remove('open'));
+    closeLb();
+    document.body.style.overflow = '';
+  }
+});
+
+/* 폭죽 */
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [], animId;
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+const COLORS = ['#FF6B6B','#FFB830','#4ECDC4','#5BC4F5','#6BCB77','#C084FC','#FF9F43'];
+function makeP(x,y,big) {
+  const sz = big ? (Math.random()*10+6) : (Math.random()*7+3);
+  return {x,y,vx:(Math.random()-.5)*(big?18:12),vy:Math.random()*(big?-16:-10)-4,
+    color:COLORS[Math.floor(Math.random()*COLORS.length)],rot:Math.random()*360,
+    rotv:(Math.random()-.5)*15,w:sz,h:sz*(Math.random()<.5?.4:1),
+    life:1,decay:big?.012:.018,shape:Math.random()<.3?'circle':'rect'};
+}
+function fireConfetti() {
+  resizeCanvas(); particles = [];
+  for(let i=0;i<220;i++){
+    const x = canvas.width/2+(Math.random()-.5)*200, y = canvas.height*.6;
+    particles.push(makeP(x,y,true));
+  }
+  if(animId) cancelAnimationFrame(animId);
+  loop();
+}
+
+/* 응원 보내기 */
+let cheerCount = 0;
+const HEART_EMOJIS = ['💛','💙','💚','❤️','🧡','💜','🤍','💗'];
+function sendCheer() {
+  cheerCount++;
+  fireConfetti();
+  // 버튼 텍스트 변경
+  const btn = document.getElementById('cheer-btn');
+  btn.textContent = '💛 한 번 더 보내기!';
+  btn.style.background = '#FFB830';
+  btn.style.boxShadow = '0 4px 20px rgba(255,184,48,.4)';
+  // 카운트 표시
+  const countEl = document.getElementById('cheer-count');
+  const numEl = document.getElementById('cheer-num');
+  const heartsEl = document.getElementById('cheer-hearts');
+  countEl.style.display = 'block';
+  numEl.textContent = cheerCount;
+  numEl.style.animation = 'none';
+  void numEl.offsetWidth;
+  numEl.style.animation = 'heartPop .4s ease';
+  // 하트 추가
+  const heart = document.createElement('span');
+  heart.className = 'heart-pop';
+  heart.textContent = HEART_EMOJIS[Math.floor(Math.random()*HEART_EMOJIS.length)];
+  heartsEl.appendChild(heart);
+  // 하트 너무 많아지면 앞에서 제거
+  if(heartsEl.children.length > 12) heartsEl.removeChild(heartsEl.firstChild);
+}
+function miniPop() {
+  const btn = event.target.closest('.vote-btn');
+  if(!btn) return;
+  const r = btn.getBoundingClientRect();
+  for(let i=0;i<30;i++) particles.push(makeP(r.left+r.width/2, r.top+r.height/2, false));
+  if(!animId) loop();
+}
+function popStat(el) {
+  const r = el.getBoundingClientRect();
+  for(let i=0;i<50;i++) particles.push(makeP(r.left+r.width/2, r.top+r.height/2, false));
+  if(!animId) loop();
+}
+function loop() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles = particles.filter(p=>p.life>0);
+  for(const p of particles){
+    ctx.save();ctx.globalAlpha=p.life;ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+    ctx.fillStyle=p.color;
+    if(p.shape==='circle'){ctx.beginPath();ctx.arc(0,0,p.w/2,0,Math.PI*2);ctx.fill();}
+    else{ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);}
+    ctx.restore();
+    p.x+=p.vx;p.y+=p.vy;p.vy+=.45;p.vx*=.98;p.rot+=p.rotv;p.life-=p.decay;
+  }
+  if(particles.length>0){animId=requestAnimationFrame(loop);}
+  else{animId=null;ctx.clearRect(0,0,canvas.width,canvas.height);}
+}
+</script>
+</body>
+</html>
