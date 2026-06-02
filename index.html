@@ -447,7 +447,7 @@
         <div class="tl-node"><span class="tl-emoji">🛰️</span><span class="tl-step-no">3</span></div>
         <div class="tl-card">
           <h3>NASA 자료에서도 같은 사실을 확인했어요</h3>
-          <p>미국 항공우주국(NASA)의 지구 기온 자료를 보니, 예전에는 지구가 1℃ 오르는 데 약 80년이 걸렸어요. 그런데 지금은 <span class="tl-key">훨씬 빠른 속도</span>로 더워지고 있다는 걸 알게 됐어요.</p>
+          <p>미국 항공우주국(NASA)의 지구 기온 자료를 보니, 지금 지구가 더워지는 속도가 <span class="tl-key">아주 옛날 자연적으로 더워지던 때보다 약 10배나 빠르다</span>고 해요. 특히 더워진 것의 대부분이 <span class="tl-key">최근 40년 사이에</span> 일어났대요.</p>
           <a class="tl-src" href="https://science.nasa.gov/earth/earth-observatory/2024-was-the-warmest-year-on-record-153806/" target="_blank" rel="noopener">🔗 NASA 보고서 보기</a>
         </div>
       </div>
@@ -866,6 +866,7 @@ const proposals = [
 ];
 const votes = [0,0,0,0,0];
 const selected = [false,false,false,false,false];
+let votesLoaded = false;
 
 function renderVotes() {
   const maxV = Math.max(1, ...votes);
@@ -877,12 +878,13 @@ function renderVotes() {
       <span class="vote-icon">${selected[i]?'✅':p.icon}</span>
       <span style="flex:0 0 130px;font-size:.88rem;text-align:left">${p.label}</span>
       <div class="vote-bar-wrap"><div class="vote-bar" style="width:${w}%;background:${p.color}"></div></div>
-      <span class="vote-pct">${votes[i]}표</span>
+      <span class="vote-pct">${votesLoaded ? votes[i]+'표' : '…'}</span>
     </button>`;
   }).join('');
   const picked = selected.filter(Boolean).length;
-  document.getElementById('vote-total').textContent =
-    `지금까지 ${totalPicks}표가 모였어요` + (picked ? ` · 내가 고른 제안 ${picked}개` : '');
+  document.getElementById('vote-total').textContent = !votesLoaded
+    ? '결과를 불러오는 중…'
+    : `지금까지 ${totalPicks}표가 모였어요` + (picked ? ` · 내가 고른 제안 ${picked}개` : '');
 }
 
 async function loadVotes() {
@@ -891,6 +893,7 @@ async function loadVotes() {
     const data = await res.json();
     if (Array.isArray(data.votes)) {
       for (let i=0;i<votes.length;i++) votes[i] = Number(data.votes[i]) || 0;
+      votesLoaded = true;
       renderVotes();
     }
   } catch(e) {}
@@ -900,6 +903,7 @@ async function toggleVote(i) {
   const turningOn = !selected[i];
   selected[i] = turningOn;
   votes[i] = Math.max(0, votes[i] + (turningOn ? 1 : -1)); // 화면 먼저 갱신
+  votesLoaded = true;
   renderVotes();
   if (turningOn) miniPop();
   try {
