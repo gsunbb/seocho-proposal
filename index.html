@@ -200,6 +200,16 @@
     /* 스토리 카드 안 자료 링크 */
     .tl-src{display:inline-flex;align-items:center;gap:4px;margin-top:11px;font-size:.78rem;font-weight:700;color:var(--c);text-decoration:none;border-bottom:1.5px dashed currentColor;padding-bottom:1px}
     .tl-src:hover{opacity:.7}
+    /* 학생 활동지 사진 */
+    .tl-photo{margin-top:14px;border-radius:14px;overflow:hidden;background:#fff;border:3px solid var(--c);box-shadow:0 4px 14px rgba(0,0,0,.1);position:relative}
+    .tl-photo img{display:block;width:100%;height:auto;cursor:zoom-in}
+    .tl-photo .tl-photo-cap{font-size:.76rem;color:#888;font-weight:700;padding:8px 12px;background:#FAFAFA;border-top:1px solid #f0f0f0;text-align:center}
+    .tl-photo .tl-photo-tag{position:absolute;top:9px;left:9px;background:var(--c);color:#fff;font-family:'Gaegu',cursive;font-size:.82rem;font-weight:700;padding:3px 11px;border-radius:100px;box-shadow:0 2px 6px rgba(0,0,0,.2);z-index:2}
+    /* 사진 확대 라이트박스 */
+    .photo-lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+    .photo-lightbox.open{display:flex}
+    .photo-lightbox img{max-width:100%;max-height:90vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+    .photo-lightbox .lb-close{position:absolute;top:18px;right:22px;color:#fff;font-size:2rem;font-weight:700;cursor:pointer;line-height:1;background:none;border:none}
     /* 출처 상세 안 링크 */
     .source-detail a{color:#3AA8A0;font-weight:700;text-decoration:none;border-bottom:1px solid #C8F0E8}
     .source-detail a:hover{border-bottom-color:#3AA8A0}
@@ -404,6 +414,16 @@
             <div class="fn-title">📈 선형 회귀 예측</div>
             <p>여러 해의 기온을 그래프에 점으로 콕콕 찍은 다음, 그 점들 사이를 가장 잘 지나가는 <b>곧은 줄(직선)</b>을 하나 긋고, 그 줄을 미래까지 쭉 늘여서 "몇 도쯤 될까?"를 읽어내는 방법이에요.</p>
             <div class="fn-tip">👉 우리가 2차시에 자로 직접 직선을 그어 예측했던 것과 똑같아요! AI는 이 직선을 아주 빠르고 정확하게 그어줄 뿐이에요.</div>
+            <div class="tl-photo" style="margin-top:11px">
+              <span class="tl-photo-tag">📏 우리가 직접</span>
+              <img src="images/student-line.jpg" alt="점을 찍고 자로 직선을 그어 미래 기온을 예측한 학생 활동지" onclick="openPhoto(this.src)">
+              <div class="tl-photo-cap">점을 찍고 자로 직선을 그어 2022~2025년을 예측한 우리 활동지 — 이게 바로 '선형 회귀'예요</div>
+            </div>
+          </div>
+          <div class="tl-photo">
+            <span class="tl-photo-tag">✏️ 우리가 직접</span>
+            <img src="images/student-compare.jpg" alt="나·AI·실제 기온을 비교해 적은 학생 활동지" onclick="openPhoto(this.src)">
+            <div class="tl-photo-cap">우리가 채운 '나 vs AI vs 실제' 비교표 — 실제 기온이 AI 예측보다 매년 더 높았어요</div>
           </div>
         </div>
       </div>
@@ -414,6 +434,11 @@
         <div class="tl-card">
           <h3>지구가 AI 예측보다 더 빨리 뜨거워지고 있었어요</h3>
           <p>AI가 틀린 게 아니라, <span class="tl-key">지구가 너무 빨리 변하고 있던 거예요.</span> 특히 2024년과 2025년은 AI 예측을 1℃ 넘게 앞질렀어요. 과거의 흐름만으로는 따라잡기 어려운 변화였죠.</p>
+          <div class="tl-photo">
+            <span class="tl-photo-tag">🖍️ 우리가 직접</span>
+            <img src="images/student-color2.jpg" alt="46년치 여름 기온을 단계별 색으로 칠한 학생 활동지" onclick="openPhoto(this.src)">
+            <div class="tl-photo-cap">46년치 기온을 색칠해 봤더니 — 파랑·초록(선선)에서 점점 주황·빨강(더움)으로 변했어요</div>
+          </div>
         </div>
       </div>
 
@@ -465,6 +490,12 @@
     </div>
   </div>
 </section>
+
+<!-- 사진 확대 보기 -->
+<div class="photo-lightbox" id="photo-lightbox" onclick="closePhoto()">
+  <button class="lb-close" onclick="closePhoto()" aria-label="닫기">✕</button>
+  <img id="photo-lightbox-img" src="" alt="활동지 확대 보기">
+</div>
 
 <!-- PROPOSALS -->
 <section class="proposals">
@@ -1040,6 +1071,17 @@ if ('IntersectionObserver' in window && tlSteps.length) {
 } else {
   tlSteps.forEach(s => s.classList.add('show'));
 }
+
+/* 활동지 사진 확대 보기 */
+function openPhoto(src) {
+  const lb = document.getElementById('photo-lightbox');
+  document.getElementById('photo-lightbox-img').src = src;
+  lb.classList.add('open');
+}
+function closePhoto() {
+  document.getElementById('photo-lightbox').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closePhoto(); });
 </script>
 </body>
 </html>
